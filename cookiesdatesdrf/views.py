@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+def home(request):
+  if request.user.is_authenticated:
+    return HttpResponse('Cookies & Dates, Welcome Home', {})
+  return HttpResponse('Cookies & Dates, You must log in', {})
