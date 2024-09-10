@@ -59,8 +59,8 @@ INSTALLED_APPS = [
 	'allauth',
 	'allauth.account',
 	'allauth.socialaccount',
-	# 'allauth.socialaccount.providers.github',
-	# 'allauth.socialaccount.providers.google',
+	'allauth.socialaccount.providers.google',
+	'allauth.socialaccount.providers.github',
 ]
 
 MIDDLEWARE = [
@@ -141,16 +141,19 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
-	# 'google': {
-	#     # For each OAuth based provider, either add a ``SocialApp``
-	#     # (``socialaccount`` app) containing the required client
-	#     # credentials, or list them here:
-	#     'APP': {
-	#         'client_id': '',
-	#         'secret': '',
-	#         'key': ''
-	#     }
-	# }
+  'google': {
+    'VERIFIED_EMAIL': True,
+    'SCOPE': [
+      'profile',
+      'email'
+		],
+    'AUTH_PARAMS': {
+      'access_type': 'online'
+		},
+	},
+	'github': {
+    'VERIFIED_EMAIL': True
+	},
 }
 
 
