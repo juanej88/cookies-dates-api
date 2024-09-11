@@ -56,8 +56,12 @@ INSTALLED_APPS = [
 	'cookiesdatesdrf',
 	# third-party-apps
 	'rest_framework',
+	'rest_framework.authtoken',
+  'djoser',
+  'corsheaders',
 	'allauth',
 	'allauth.account',
+  'allauth.headless',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 	'allauth.socialaccount.providers.github',
@@ -70,9 +74,26 @@ MIDDLEWARE = [
 	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
-	"allauth.account.middleware.AccountMiddleware",
+  'corsheaders.middleware.CorsMiddleware',
+	'allauth.account.middleware.AccountMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# React Config
+
+REST_FRAMEWORK = {
+	'DEFAULT_PERMISSION_CLASSES': [
+		'rest_framework.permissions.AllowAny',
+	]
+}
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+	'http://localhost:3000',
+	'http://127.0.0.1:3000',
+]
+
 
 ROOT_URLCONF = 'cookiesdates.urls'
 
@@ -128,9 +149,20 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Cookies & Dates]'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Cookies & Dates] '
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+
+# HEADLESS_ONLY = True
+
+# HEADLESS_FRONTEND_URLS = {
+#     "account_confirm_email": "/account/verify-email/{key}",
+#     "account_reset_password": "/account/password/reset",
+#     "account_reset_password_from_key": "/account/password/reset/key/{key}",
+	# "account_signup": "/account/signup",
+  # "account_signup": "/_allauth/browser/v1/auth/login",
+#     "socialaccount_login_error": "/account/provider/callback",
+# }
 
 AUTHENTICATION_BACKENDS = [
 	# Needed to login by username in Django admin, regardless of `allauth`
