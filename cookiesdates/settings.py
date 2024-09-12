@@ -57,14 +57,14 @@ INSTALLED_APPS = [
 	# third-party-apps
 	'rest_framework',
 	'rest_framework.authtoken',
-  'djoser',
   'corsheaders',
 	'allauth',
 	'allauth.account',
-  'allauth.headless',
 	'allauth.socialaccount',
 	'allauth.socialaccount.providers.google',
 	'allauth.socialaccount.providers.github',
+	'dj_rest_auth',
+	'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -81,18 +81,19 @@ MIDDLEWARE = [
 
 # React Config
 
-REST_FRAMEWORK = {
-	'DEFAULT_PERMISSION_CLASSES': [
-		'rest_framework.permissions.AllowAny',
-	]
-}
-
 CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
 	'http://localhost:3000',
 	'http://127.0.0.1:3000',
 ]
+
+REST_FRAMEWORK = {
+  'DEFAULT_AUTHENTICATION_CLASSES': [
+		'rest_framework.authentication.TokenAuthentication',
+		'rest_framework.authentication.SessionAuthentication',
+  ],
+}
 
 
 ROOT_URLCONF = 'cookiesdates.urls'
@@ -149,20 +150,18 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Cookies & Dates] '
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/?verification=1'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/?verification=1'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 
-# HEADLESS_ONLY = True
-
-# HEADLESS_FRONTEND_URLS = {
-#     "account_confirm_email": "/account/verify-email/{key}",
-#     "account_reset_password": "/account/password/reset",
-#     "account_reset_password_from_key": "/account/password/reset/key/{key}",
-	# "account_signup": "/account/signup",
-  # "account_signup": "/_allauth/browser/v1/auth/login",
-#     "socialaccount_login_error": "/account/provider/callback",
-# }
+# dj-rest-auth Config
+REST_AUTH_TOKEN_MODEL = 'rest_framework.authtoken.models.Token'
+REST_AUTH_REGISTER_SERIALIZERS = {
+  'REGISTER_SERIALIZER': 'dj_rest_auth.registration.serializers.RegisterSerializer',
+}
 
 AUTHENTICATION_BACKENDS = [
 	# Needed to login by username in Django admin, regardless of `allauth`
