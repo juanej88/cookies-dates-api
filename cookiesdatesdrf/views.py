@@ -1,43 +1,41 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-# Get CLIENT_ID from dotenv to log in with google
-import os
-from dotenv import load_dotenv
-load_dotenv()
+from rest_framework.permissions import IsAuthenticated
+
 # Log in with google
 from django.contrib.auth import get_user_model
+import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from google.oauth2 import id_token
-from google.auth.transport import requests
 
-def home(request):
-  if request.user.is_authenticated:
-    return HttpResponse(f'Cookies & Dates, Welcome Home {request.user.email}', {})
-  return HttpResponse('Cookies & Dates, You must log in', {})
+class Home(APIView):
+  permission_classes = [IsAuthenticated]
+
+  def get(self, request):
+    return Response({'message': 'Welcome to Cookies & Dates'})
 
 User = get_user_model()
 
 class GoogleLoginView(APIView):
   def post(self, request):
     token = request.data.get('token')
+
+    if not token:
+      return Response({'error': 'Access token is required'}, status=status.HTTP_400_BAD_REQUEST)
       
     try:
-      CLIENT_ID = os.environ.get('CLIENT_ID')
+      # Make a request to Google's UserInfo endpoint
+      user_info_url = 'https://www.googleapis.com/oauth2/v3/userinfo'
+      headers = {'Authorization': f'Bearer {token}'}
+      response = requests.get(user_info_url, headers=headers)
+      user_info = response.json()
       
-      # Verify the token
-      idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
-
-      # Get user info from the decoded token
-      # userid = idinfo['sub']
-      email = idinfo['email']
-      first_name = idinfo.get('given_name')
-      last_name = idinfo.get('family_name')
+      email = user_info['email']
+      first_name = user_info.get('given_name')
+      last_name = user_info.get('family_name')
       
       # Check if the email is verified
-      if idinfo['email_verified']:
+      if user_info['email_verified']:
         # Check if user exists, if not create a new one
         user, created = User.objects.get_or_create(
           email=email,
@@ -48,7 +46,7 @@ class GoogleLoginView(APIView):
           }
         )
 
-        # Generate or get the token
+        # Generate or get a token
         token, _ = Token.objects.get_or_create(user=user)
 
         return Response({
