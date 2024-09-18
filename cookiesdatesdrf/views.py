@@ -1,6 +1,6 @@
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-# Log in with google
 from django.contrib.auth import get_user_model
 import requests
 from rest_framework.views import APIView
@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 
 class Home(APIView):
+  authentication_classes = [TokenAuthentication]
   permission_classes = [IsAuthenticated]
 
   def get(self, request):
@@ -49,24 +50,14 @@ class GoogleLoginView(APIView):
         # Generate or get a token
         token, _ = Token.objects.get_or_create(user=user)
 
-        response = Response({
+        return Response({
           'message': 'Login successful',
           'user_id': user.id,
           'email': user.email,
           'first_name': user.first_name,
           'last_name': user.last_name,
+          'token': token.key,
         }, status=status.HTTP_200_OK)
-
-        response.set_cookie(
-          'auth_token',
-          token.key,
-          httponly=True,  # Prevents JavaScript access
-          # secure=True,    # Sends only over HTTPS
-          samesite='Lax', # Provides CSRF protection
-          max_age=2592000,   # Expires in 30 days
-        )
-
-        return response
       else:
         return Response({'error': 'Email not verified'}, status=status.HTTP_400_BAD_REQUEST)
     
