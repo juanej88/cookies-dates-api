@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
   path('', views.Home.as_view(), name='home'),
+  path('events/', views.EventListCreateView.as_view(), name='event-list-create'),
   path('api/google-login/', views.GoogleLoginView.as_view(), name='google_login'),
 ]

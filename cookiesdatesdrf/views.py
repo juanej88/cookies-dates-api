@@ -8,6 +8,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
+from rest_framework import generics
+from .serializers import EventSerializer
+from .models import Event
+
 class Home(APIView):
   authentication_classes = [TokenAuthentication]
   permission_classes = [IsAuthenticated]
@@ -16,6 +20,19 @@ class Home(APIView):
     return Response({'message': 'Welcome to Cookies & Dates'})
 
 User = get_user_model()
+
+
+class EventListCreateView(generics.ListCreateAPIView):
+  serializer_class = EventSerializer
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [IsAuthenticated]
+  
+  def get_queryset(self):
+    return Event.objects.filter(user=self.request.user)
+  
+  def perform_create(self, serializer):
+    serializer.save(user=self.request.user)
+
 
 class GoogleLoginView(APIView):
   def post(self, request):
