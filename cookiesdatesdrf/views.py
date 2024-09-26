@@ -1,14 +1,16 @@
+# Event Views
+from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from django.contrib.auth import get_user_model
+# GoogleLoginView
 import requests
+from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from rest_framework import generics
 from .serializers import EventSerializer
 from .models import Event
 
@@ -32,6 +34,21 @@ class EventListCreateView(generics.ListCreateAPIView):
   
   def perform_create(self, serializer):
     serializer.save(user=self.request.user)
+
+
+class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
+  serializer_class = EventSerializer
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [IsAuthenticated]
+
+  def get_queryset(self):
+    return Event.objects.filter(user=self.request.user)
+
+  def perform_update(self, serializer):
+    serializer.save(user=self.request.user)
+
+  def perform_destroy(self, instance):
+    instance.delete()
 
 
 class GoogleLoginView(APIView):
