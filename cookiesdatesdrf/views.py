@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from .serializers import EventSerializer
+from .serializers import UserSerializer, EventSerializer
 from .models import Event
 
 class Home(APIView):
@@ -52,6 +52,7 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GoogleLoginView(APIView):
+  serializer_class = UserSerializer
   def post(self, request):
     token = request.data.get('token')
 
@@ -80,6 +81,10 @@ class GoogleLoginView(APIView):
             'last_name': last_name,
           }
         )
+
+        timezone_offset = request.data.get('timezoneOffset', 0)
+        user.timezone_offset = int(timezone_offset)
+        user.save()
 
         # Generate or get a token
         token, _ = Token.objects.get_or_create(user=user)

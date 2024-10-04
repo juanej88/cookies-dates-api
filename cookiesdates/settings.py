@@ -42,7 +42,6 @@ DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -58,13 +57,6 @@ INSTALLED_APPS = [
 	'rest_framework',
 	'rest_framework.authtoken',
   'corsheaders',
-	'allauth',
-	'allauth.account',
-	'allauth.socialaccount',
-	'allauth.socialaccount.providers.google',
-	'allauth.socialaccount.providers.github',
-	'dj_rest_auth',
-	'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +67,6 @@ MIDDLEWARE = [
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
   'corsheaders.middleware.CorsMiddleware',
-	'allauth.account.middleware.AccountMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -163,28 +154,8 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 
 AUTHENTICATION_BACKENDS = [
-	# Needed to login by username in Django admin, regardless of `allauth`
 	'django.contrib.auth.backends.ModelBackend',
-
-	# `allauth` specific authentication methods, such as login by email
-	'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
-SOCIALACCOUNT_PROVIDERS = {
-  'google': {
-    'VERIFIED_EMAIL': True,
-    'SCOPE': [
-      'profile',
-      'email'
-		],
-    'AUTH_PARAMS': {
-      'access_type': 'online'
-		},
-	},
-	'github': {
-    'VERIFIED_EMAIL': True
-	},
-}
 
 
 # Internationalization
@@ -208,3 +179,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'cookiesdatesdrf.User'
