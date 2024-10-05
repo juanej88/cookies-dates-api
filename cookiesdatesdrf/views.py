@@ -11,8 +11,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from .serializers import UserSerializer, EventSerializer
+from .serializers import EventSerializer
 from .models import Event
+
+from .utils import test_email
 
 class Home(APIView):
   authentication_classes = [TokenAuthentication]
@@ -22,6 +24,11 @@ class Home(APIView):
     return Response({'message': 'Welcome to Cookies & Dates'})
 
 User = get_user_model()
+
+class TestEmail(APIView):
+  def get(self, request):
+    test_email()
+    return Response({'message': 'Email Sent Successfully!'})
 
 
 class EventListCreateView(generics.ListCreateAPIView):
@@ -52,7 +59,6 @@ class EventDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class GoogleLoginView(APIView):
-  serializer_class = UserSerializer
   def post(self, request):
     token = request.data.get('token')
 

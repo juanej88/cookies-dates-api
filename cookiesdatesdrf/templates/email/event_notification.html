@@ -1,0 +1,43 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: "Wix Madefor Display", Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <hr>
+  <p><strong>Hello {{ user.first_name }},</strong></p>
+  <p>You have the following notifications for today {{ today|date:"l, d F" }}:</p>
+
+    {% for event in events %}
+      {% if event.event_type == 'birthday' %}
+        <p>
+          <strong>{{ event.name }}</strong> is turning {{ today.year|subtract:event.date.year }} years old
+          {% if event.notification_days == 0 %}
+            today.
+          {% elif event.notification_days == 1 %}
+            in 1 day.
+          {% else %}
+            in {{ event.notification_days }} days.
+          {% endif %}
+        </p>
+      {% else %}
+        <p>
+          The event titled "<strong>{{ event.name }}</strong>" is
+          {% if event.notification_days == 0 %}
+            today.
+          {% elif event.notification_days == 1 %}
+            coming in 1 day.
+          {% else %}
+            coming in {{ event.notification_days }} days.
+          {% endif %}
+        </p>
+      {% endif %}
+    {% endfor %}
+
+    <br>
+    <p>Best regards,<br>Cookies & Dates</p>
+</body>
+</html>
