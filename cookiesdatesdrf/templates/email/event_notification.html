@@ -9,35 +9,30 @@
 <body>
   <hr>
   <p><strong>Hello {{ user.first_name }},</strong></p>
-  <p>You have the following notifications for today {{ today|date:"l, d F" }}:</p>
+  <p>We hope you're having a great {{ today|date:"l" }}! Here's a quick look at your upcoming event{{ events|length|pluralize }}:</p>
 
-    {% for event in events %}
-      {% if event.event_type == 'birthday' %}
-        <p>
-          <strong>{{ event.name }}</strong> is turning {{ today.year|subtract:event.date.year }} years old
-          {% if event.notification_days == 0 %}
-            today.
-          {% elif event.notification_days == 1 %}
-            in 1 day.
-          {% else %}
-            in {{ event.notification_days }} days.
-          {% endif %}
-        </p>
-      {% else %}
-        <p>
-          The event titled "<strong>{{ event.name }}</strong>" is
-          {% if event.notification_days == 0 %}
-            today.
-          {% elif event.notification_days == 1 %}
-            coming in 1 day.
-          {% else %}
-            coming in {{ event.notification_days }} days.
-          {% endif %}
-        </p>
-      {% endif %}
-    {% endfor %}
+  {% for event in events %}
+  <ul>
+    <li>
+    {% if event.event_type == 'birthday' %}
+      <strong>{{ event.name }}</strong> is turning 
+      {{ today.year|subtract:event.date.year }} years old
+    {% else %}
+      The event titled "<strong>{{ event.name }}</strong>" is
+    {% endif %}
 
-    <br>
-    <p>Best regards,<br>Cookies & Dates</p>
+    {% if event.notification_days == 0 %}
+      today.
+    {% elif event.notification_days == 1 %}
+      tomorrow.
+    {% else %}
+      in {{ event.notification_days }} days.
+    {% endif %}
+    </li>
+  </ul>
+  {% endfor %}
+
+  <p>Have a great day!</p>
+  <p>Best wishes,<br> The Cookies & Dates Team</p>
 </body>
 </html>

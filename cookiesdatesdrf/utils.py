@@ -2,6 +2,10 @@ from datetime import date, timedelta
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 def get_upcoming_event(event, today, this_year, next_year):
   month = event.month
   day = event.day
@@ -38,12 +42,12 @@ def get_notification_date(event, notification_days):
 
 
 def test_email():
-  today = date(2024, 3, 3)
+  today = date(2024, 11, 1)
   events = [
     {
-      'name': 'Veronika Olejárová',
+      'name': 'Tim Cook',
       'event_type': 'birthday',
-      'date': date(1992, 3, 3),
+      'date': date(1960, 11, 1),
       'notification_days': 0,
     },
     {
@@ -63,11 +67,10 @@ def test_email():
   
   subject = '[Cookies & Dates] Your Notifications for today'
   from_email = 'Cookies & Dates'
-  recipient_list = ['arq.jorrin@gmail.com']
+  recipient_list = [os.environ.get('ADMIN_USER_EMAIL')]
 
   send_mail(subject, email_body, from_email, recipient_list, html_message=email_body)
 
 
 if __name__ == '__main__':
-  # print('Notification Date:', get_notification_date(date(1988,10,4), 1))
-  test_email()
+  print('Notification Date:', get_notification_date(date(1988,10,4), 1))
