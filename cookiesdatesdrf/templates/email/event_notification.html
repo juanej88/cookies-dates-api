@@ -8,7 +8,7 @@
 </head>
 <body>
   <hr>
-  <p><strong>Hello {{ user.first_name }},</strong></p>
+  <p>Hello {{ user.first_name }},</p>
   <p>We hope you're having a great {{ today|date:"l" }}! Here's a quick look at your upcoming event{{ events|length|pluralize }}:</p>
 
   {% for event in events %}
