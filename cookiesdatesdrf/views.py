@@ -15,6 +15,8 @@ from .serializers import EventSerializer
 from .models import Event
 
 from .utils import test_email
+from .services import send_event_notification_emails
+
 
 class Home(APIView):
   authentication_classes = [TokenAuthentication]
@@ -24,6 +26,7 @@ class Home(APIView):
     return Response({'message': 'Welcome to Cookies & Dates'})
 
 User = get_user_model()
+
 
 class TestEmail(APIView):
   def get(self, request):
@@ -109,3 +112,13 @@ class GoogleLoginView(APIView):
     except ValueError:
       # Invalid token
       return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SendEmailsView(APIView):
+  def get(self, request, *args, **kwargs):
+    if request.headers.get('X-Appengine-Cron') != 'true':
+      return Response({'detail': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    send_event_notification_emails()
+
+    return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
