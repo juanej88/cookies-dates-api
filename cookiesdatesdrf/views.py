@@ -11,10 +11,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
+# ChatGPT View
+from django.shortcuts import get_object_or_404
+
 from .serializers import EventSerializer
 from .models import Event
 
-from .utils import test_email
+from .utils import test_email, create_chatgpt_message
 from .services import send_event_notification_emails
 
 
@@ -122,3 +125,29 @@ class SendEmailsView(APIView):
     send_event_notification_emails()
 
     return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+
+
+class CreateChatgptMessageView(generics.UpdateAPIView):
+  serializer_class = EventSerializer
+  authentication_classes = [TokenAuthentication]
+  permission_classes = [IsAuthenticated]
+
+  def get_object(self):
+    event_id = self.kwargs.get('pk')
+    return get_object_or_404(Event, id=event_id, user=self.request.user)
+  
+  def update(self, request, *args, **kwargs):
+    event_instance = self.get_object()
+    person_details = request.data.get('person_details', None)
+
+    message = create_chatgpt_message(
+      event_instance.name,
+      person_details, 
+      event_instance.previous_message
+    )
+
+    serializer = self.get_serializer(event_instance, data=request.data, partial=True)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(previous_message=message)
+
+    return Response(serializer.data)

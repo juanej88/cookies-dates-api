@@ -8,4 +8,5 @@ urlpatterns = [
   path('api/google-login/', views.GoogleLoginView.as_view(), name='google_login'),
   path('test-email/', views.TestEmail.as_view(), name='test-email'),
   path('send-emails/', views.SendEmailsView.as_view(), name='send-emails'),
+  path('create-chatgpt-message/<int:pk>', views.CreateChatgptMessageView.as_view(), name='create-chatgpt-message'),
 ]
