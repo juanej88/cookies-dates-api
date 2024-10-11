@@ -3,8 +3,9 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 import os
+from openai import OpenAI
 from dotenv import load_dotenv
-load_dotenv()
+
 
 def get_upcoming_event(event, today, this_year, next_year):
   month = event.month
@@ -42,6 +43,8 @@ def get_notification_date(event, notification_days):
 
 
 def test_email():
+  load_dotenv()
+
   today = date(2024, 11, 1)
   events = [
     {
@@ -72,5 +75,43 @@ def test_email():
   send_mail(subject, email_body, from_email, recipient_list, html_message=email_body)
 
 
+def create_chatgpt_message(person_name, person_details=None, previous_message=None):
+	load_dotenv()
+	client = OpenAI()
+
+	system_message = {
+		'role': 'system',
+		'content': 'You are an assistant that generates thoughtful and heartwarming birthday messages with 75 tokens maximum. When users provide personal details, incorporate them to make the message more unique and meaningful. If no specific details are provided, generate a generic but heartfelt birthday message. Avoid repeating previous messages. If a user asks a question unrelated to birthday messages, politely inform them of your focus and invite them to ask about birthday messages.',
+	}
+
+	user_message_content = f"Birthday person's name is {person_name}."
+
+	if person_details:
+		user_message_content += f'Here are some personal details: {person_details}.'
+
+	if previous_message:
+		user_message_content += f'The previous message is: {previous_message}.'
+
+	user_message = {
+		'role': 'user',
+		'content': user_message_content
+	}
+
+	response = client.chat.completions.create(
+		model='gpt-4o-mini',
+		messages=[system_message, user_message],
+		max_completion_tokens=75,
+	)
+
+	return response
+
+
 if __name__ == '__main__':
-  print('Notification Date:', get_notification_date(date(1988,10,4), 1))
+  person_name = 'Tim'
+  person_details = ''
+  previous_message = ''
+  response = create_chatgpt_message(person_name, person_details, previous_message)
+  print(response)
+	# print('Response: ', response.choices[0].message)
+
+  # print('Notification Date:', get_notification_date(date(1988,10,4), 1))
