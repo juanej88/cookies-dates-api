@@ -13,6 +13,8 @@ from rest_framework.authtoken.models import Token
 
 # ChatGPT View
 from django.shortcuts import get_object_or_404
+from django.db import transaction
+from rest_framework.exceptions import PermissionDenied
 
 from .serializers import EventSerializer
 from .models import Event
@@ -27,8 +29,6 @@ class Home(APIView):
 
   def get(self, request):
     return Response({'message': 'Welcome to Cookies & Dates'})
-
-User = get_user_model()
 
 
 class TestEmail(APIView):
@@ -85,6 +85,7 @@ class GoogleLoginView(APIView):
       # Check if the email is verified
       if user_info['email_verified']:
         # Check if user exists, if not create a new one
+        User = get_user_model()
         user, created = User.objects.get_or_create(
           email=email,
           defaults={
@@ -107,6 +108,7 @@ class GoogleLoginView(APIView):
           'email': user.email,
           'first_name': user.first_name,
           'last_name': user.last_name,
+          'messages_left': user.messages_left,
           'token': token.key,
         }, status=status.HTTP_200_OK)
       else:
@@ -136,7 +138,15 @@ class CreateChatgptMessageView(generics.UpdateAPIView):
     event_id = self.kwargs.get('pk')
     return get_object_or_404(Event, id=event_id, user=self.request.user)
   
+  @transaction.atomic
   def update(self, request, *args, **kwargs):
+    # Check messages_left
+    User = get_user_model()
+    user = User.objects.select_for_update().get(id=request.user.id)
+
+    if user.messages_left <= 0:
+      raise PermissionDenied('You have no messages left for this month.')
+
     event_instance = self.get_object()
     person_details = request.data.get('person_details', None)
 
@@ -150,4 +160,11 @@ class CreateChatgptMessageView(generics.UpdateAPIView):
     serializer.is_valid(raise_exception=True)
     serializer.save(previous_message=message)
 
-    return Response(serializer.data)
+    # Update messages_left
+    user.messages_left -= 1
+    user.save()
+
+    response_data = serializer.data
+    response_data['messages_left'] = user.messages_left
+
+    return Response(response_data)

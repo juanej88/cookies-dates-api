@@ -6,7 +6,7 @@ class CustomUserAdmin(UserAdmin):
   model = User
   list_display = ('username', 'email', 'first_name', 'last_name', 'timezone_offset', 'is_staff')
   fieldsets = UserAdmin.fieldsets + (
-    (None, {'fields': ('timezone_offset', 'last_notification_date',)}),
+    (None, {'fields': ('timezone_offset', 'last_notification_date', 'messages_left')}),
   )
 
 admin.site.register(User, CustomUserAdmin)

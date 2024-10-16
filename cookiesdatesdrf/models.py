@@ -11,6 +11,7 @@ from .utils import get_notification_date
 class User(AbstractUser):
   timezone_offset = models.IntegerField(default=0)
   last_notification_date = models.DateField(null=True, blank=True)
+  messages_left = models.PositiveSmallIntegerField(default=10)
 
   def get_local_time(self):
     return timezone.now() - timedelta(minutes=self.timezone_offset)

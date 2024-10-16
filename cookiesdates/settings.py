@@ -71,7 +71,6 @@ MIDDLEWARE = [
 ]
 
 # React Config
-
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
 	'http://localhost:3000',
@@ -88,8 +87,8 @@ REST_FRAMEWORK = {
 			'rest_framework.throttling.UserRateThrottle',
 	],
 	'DEFAULT_THROTTLE_RATES': {
-			'anon': '15/minute',
-			'user': '30/minute',
+			'anon': '10/minute',
+			'user': '200/day',
 	},
 }
 
