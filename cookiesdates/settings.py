@@ -38,7 +38,7 @@ ADMINS=[(os.environ.get('ADMIN_USER_NAME'), os.environ.get('ADMIN_USER_EMAIL'))]
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ('true', '1')
 
 ALLOWED_HOSTS = [
   os.environ.get('ALLOWED_HOST'),
@@ -80,9 +80,13 @@ MIDDLEWARE = [
 # React Config
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-	'http://localhost:3000',
-	'http://127.0.0.1:3000',
+	origin.strip() for origin in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
 ]
+if DEBUG:
+  CORS_ALLOWED_ORIGINS += [
+    'http://localhost:3000',
+		'http://127.0.0.1:3000',
+	]
 
 REST_FRAMEWORK = {
   'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -132,6 +136,9 @@ DATABASES = {
     'PASSWORD': os.environ.get('DB_PASSWORD'),
     'HOST': os.environ.get('DB_HOST'),
     'PORT': os.environ.get('DB_PORT'),
+    'OPTIONS': {
+			'charset': 'utf8mb4',
+		}
 	}
 }
 
