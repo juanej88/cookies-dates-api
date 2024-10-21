@@ -4,3 +4,8 @@ dockerfilePath = "./Dockerfile"
 watchPatterns = [
     "**"
 ]
+
+[crons.send-notifications]
+description = "Send event notification emails every 2 hours"
+schedule = "*/15 * * * *"
+command = "curl -X GET ${RAILWAY_URL}/send-emails/ -H 'Authorization: Bearer ${CRON_SECRET_TOKEN}' -H 'Content-Type: application/json'"
