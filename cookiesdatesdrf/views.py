@@ -16,6 +16,10 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from rest_framework.exceptions import PermissionDenied
 
+# Send Emails View
+import os
+from dotenv import load_dotenv
+
 from .serializers import EventSerializer
 from .models import Event
 
@@ -121,12 +125,17 @@ class GoogleLoginView(APIView):
 
 class SendEmailsView(APIView):
   def get(self, request, *args, **kwargs):
-    if request.headers.get('X-Appengine-Cron') != 'true':
+    load_dotenv()
+    CRON_SECRET_TOKEN = os.environ.get('CRON_SECRET_TOKEN')
+    auth_header = request.headers.get('Authorization')
+    if auth_header != f'Bearer {CRON_SECRET_TOKEN}':
       return Response({'detail': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     
-    send_event_notification_emails()
-
-    return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+    try:
+      send_event_notification_emails()
+      return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+    except Exception as e:
+      return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CreateChatgptMessageView(generics.UpdateAPIView):

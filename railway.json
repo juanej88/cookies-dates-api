@@ -1,0 +1,12 @@
+{
+  "cron": [
+    {
+      "description": "Send event notification emails every 2 hours",
+      "url": "/send-emails/",
+      "schedule": "every 2 hours",
+      "headers": {
+        "Authorization": "Bearer ${CRON_SECRET_TOKEN}"
+      }
+    }
+  ]
+}
