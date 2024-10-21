@@ -22,7 +22,9 @@ RUN apt-get update && \
     gcc \
     # for mysql
     default-libmysqlclient-dev \
-    pkg-config && \
+    pkg-config \
+    # Install cron
+    cron && \
     # other
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -42,16 +44,26 @@ COPY requirements.txt /tmp/requirements.txt
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
 
-# set the Django default project name
+# Set the Django default project name
 ARG PROJ_NAME="cookiesdates"
 
-# create a bash script to run the Django project
+# Create a bash script to run the Django project
 # this script will execute at runtime when
 # the container starts and the database is available
 RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "RUN_PORT=\"\${PORT:-8000}\"\n\n" >> ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
-    printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
+    printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\" &\n" >> ./paracord_runner.sh && \
+    printf "cron\n" >> ./paracord_runner.sh # Start cron in the background
+
+# Add the cron job to run every 2 hours
+RUN echo "0 */2 * * * cd /code && /opt/venv/bin/python manage.py run_tasks >> /var/log/cron.log 2>&1" >> /etc/cron.d/django_cron
+
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/django_cron
+
+# Apply the cron job
+RUN crontab /etc/cron.d/django_cron
 
 # make the bash script executable
 RUN chmod +x paracord_runner.sh
