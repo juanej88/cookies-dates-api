@@ -1,0 +1,38 @@
+name: Run Tasks by an API Call
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  call_api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Make API Call
+        id: run-tasks
+        run: |
+          response=$(curl -X POST "${{ secrets.API_ENDPOINT }}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -w "\n%{http_code}" \
+            -s)
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo "Response body: $body"
+          echo "Status code: $http_code"
+          
+          if [ "$http_code" -ne 200 ]; then
+            echo "Error: API call failed with status $http_code"
+            echo "Response: $body"
+            exit 1
+          fi
+
+      - name: Report Failure
+        if: failure()
+        run: |
+          echo "::error::Email notification job failed. Check the logs for details."

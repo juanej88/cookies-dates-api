@@ -19,6 +19,8 @@ from rest_framework.exceptions import PermissionDenied
 # Send Emails View
 import os
 from dotenv import load_dotenv
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from .serializers import EventSerializer
 from .models import Event
@@ -122,12 +124,16 @@ class GoogleLoginView(APIView):
       # Invalid token
       return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class SendEmailsView(APIView):
-  def get(self, request, *args, **kwargs):
+  def post(self, request, *args, **kwargs):
     load_dotenv()
     CRON_SECRET_TOKEN = os.environ.get('CRON_SECRET_TOKEN')
     auth_header = request.headers.get('Authorization')
+
+    if auth_header is None:
+      return Response({'detail': 'Authorization header missing'}, status=status.HTTP_401_UNAUTHORIZED)
+    
     if auth_header != f'Bearer {CRON_SECRET_TOKEN}':
       return Response({'detail': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     
