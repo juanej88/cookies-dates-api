@@ -4,7 +4,7 @@ from .models import User, Event
 
 def send_event_notification_emails():
   for user in User.objects.all():
-    user_local_time = user.get_local_time
+    user_local_time = user.get_local_time()
     user_local_date = user_local_time.date()
 
     # Check if it is 8am in the user's local time and if they have not received any notifications today

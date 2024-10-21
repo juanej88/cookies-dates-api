@@ -24,7 +24,7 @@ from .serializers import EventSerializer
 from .models import Event
 
 from .utils import test_email, create_chatgpt_message
-from .services import send_event_notification_emails
+from .tasks import send_event_notification_emails
 
 
 class Home(APIView):
