@@ -1,6 +1,4 @@
 from datetime import date, timedelta
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 
 import os
 from openai import OpenAI
@@ -40,39 +38,6 @@ def get_notification_date(event, notification_days):
     notification_date = upcoming_event - days
 
   return notification_date
-
-
-def test_email():
-  load_dotenv()
-
-  today = date(2024, 11, 1)
-  events = [
-    {
-      'name': 'Tim Cook',
-      'event_type': 'birthday',
-      'date': date(1960, 11, 1),
-      'notification_days': 0,
-    },
-    {
-      'name': 'Wedding Anniversary',
-      'event_type': 'special',
-      'date': date(2024, 2, 1),
-      'notification_days': 14,
-    },
-  ]
-  context = {
-    'today': today,
-    'user': {'first_name': 'Juan'},
-    'events': events,
-  }
-
-  email_body = render_to_string('email/event_notification.html', context)
-  
-  subject = '[Cookies & Dates] Your Notifications for today'
-  from_email = 'Cookies & Dates'
-  recipient_list = [os.environ.get('ADMIN_USER_EMAIL')]
-
-  send_mail(subject, email_body, from_email, recipient_list, html_message=email_body)
 
 
 def create_chatgpt_message(person_name, person_details=None, previous_message=None):

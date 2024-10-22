@@ -39,8 +39,8 @@ class Event(models.Model):
     return f'{self.user.email}: {self.name}'
   
   def save(self, *args, **kwargs):
-    if self.notify:
+    if self.notify and not self.notification_date:
       self.notification_date = get_notification_date(self.date, self.notification_days)
-    else: 
+    elif not self.notify: 
       self.notification_date = None
     super().save(*args, **kwargs)

@@ -9,14 +9,14 @@
 <body>
   <hr>
   <p>Hello {{ user.first_name }},</p>
-  <p>We hope you're having a great {{ today|date:"l" }}! Here's a quick look at your upcoming event{{ events|length|pluralize }}:</p>
+  <p>We hope you're having a great {{ date|date:"l" }}! Here's a quick look at your upcoming event{{ events|length|pluralize }}:</p>
 
   {% for event in events %}
   <ul>
     <li>
     {% if event.event_type == 'birthday' %}
       <strong>{{ event.name }}</strong> is turning 
-      {{ today.year|subtract:event.date.year }} years old
+      {{ date.year|subtract:event.date.year }} years old
     {% else %}
       The event titled "<strong>{{ event.name }}</strong>" is
     {% endif %}

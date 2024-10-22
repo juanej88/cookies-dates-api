@@ -6,8 +6,7 @@ def send_event_notification_emails():
   for user in User.objects.all():
     user_local_time = user.get_local_time()
     user_local_date = user_local_time.date()
-
-    # Check if it is 8am in the user's local time and if they have not received any notifications today
+    # Check if the users have not received any notifications today and if it is 6am in their local time or later
     if (user.last_notification_date is None or user.last_notification_date < user_local_date) and user_local_time.hour >= 6:
       today_events = Event.objects.filter(
         user=user,

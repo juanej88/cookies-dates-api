@@ -15,6 +15,7 @@ from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from rest_framework.exceptions import PermissionDenied
+from .utils import create_chatgpt_message
 
 # Send Emails View
 import os
@@ -25,7 +26,6 @@ from django.utils.decorators import method_decorator
 from .serializers import EventSerializer
 from .models import Event
 
-from .utils import test_email, create_chatgpt_message
 from .tasks import send_event_notification_emails
 
 
@@ -35,12 +35,6 @@ class Home(APIView):
 
   def get(self, request):
     return Response({'message': 'Welcome to Cookies & Dates'})
-
-
-class TestEmail(APIView):
-  def get(self, request):
-    test_email()
-    return Response({'message': 'Email Sent Successfully!'})
 
 
 class EventListCreateView(generics.ListCreateAPIView):
