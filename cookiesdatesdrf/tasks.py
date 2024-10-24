@@ -3,6 +3,8 @@ from django.template.loader import render_to_string
 from .models import User, Event
 
 def send_event_notification_emails():
+  email_count = 0
+
   for user in User.objects.all():
     user_local_time = user.get_local_time()
     user_local_date = user_local_time.date()
@@ -33,4 +35,13 @@ def send_event_notification_emails():
         user.last_notification_date = user_local_date
         user.save()
 
-  return 'Event notification emails sent successfully'
+        # Update notification_date for each event by calling the save function in the  Event model
+        for event in today_events:
+          event.save()
+
+        email_count += 1
+
+  if email_count > 0:
+    return f'Event notification emails sent successfully: {email_count} email(s) sent.'
+  else:
+    return 'No emails were sent as there were no notifications to send.'

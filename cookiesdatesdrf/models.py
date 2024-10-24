@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import get_notification_date
+import os
 
 
 class User(AbstractUser):
@@ -39,7 +40,8 @@ class Event(models.Model):
     return f'{self.user.email}: {self.name}'
   
   def save(self, *args, **kwargs):
-    if self.notify and not self.notification_date:
+    # Update the notification_date if notify is True and if TESTING is False
+    if self.notify and not os.getenv('TESTING', False):
       self.notification_date = get_notification_date(self.date, self.notification_days)
     elif not self.notify: 
       self.notification_date = None

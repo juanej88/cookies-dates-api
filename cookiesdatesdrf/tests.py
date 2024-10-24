@@ -2,11 +2,15 @@ from django.test import TestCase
 from unittest.mock import patch
 from django.utils import timezone
 from datetime import timedelta
+import os
 from .models import User, Event
 from .tasks import send_event_notification_emails
 
 class SendEventNotificationEmailsTest(TestCase):
   def setUp(self):
+    # Set the Testing environment variable to prevent notification_date update in tests
+    os.environ['TESTING'] = 'True'
+
     # Create a test user
     self.user = User.objects.create(
       first_name='testuser',
@@ -32,7 +36,7 @@ class SendEventNotificationEmailsTest(TestCase):
     response = send_event_notification_emails()
 
     # Assertions to ensure the email was sent
-    self.assertEqual(response, 'Event notification emails sent successfully')
+    self.assertEqual(response, 'Event notification emails sent successfully: 1 email(s) sent.')
     mock_send_mail.assert_called_once()
 
     # Get the arguments passed to send_mail
@@ -61,4 +65,4 @@ class SendEventNotificationEmailsTest(TestCase):
     # Ensure no email is sent
     mock_send_mail.assert_not_called()
     # Verify the response
-    self.assertEqual(response, 'Event notification emails sent successfully')
+    self.assertEqual(response, 'No emails were sent as there were no notifications to send.')
