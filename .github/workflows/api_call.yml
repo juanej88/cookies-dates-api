@@ -34,7 +34,7 @@ jobs:
           fi
 
       - name: Report Failure
-        if: if: ${{ failure() }}
+        if: ${{ failure() }}
         run: |
           echo "::error::Daily API job failed. Check the logs for details."
 
@@ -65,6 +65,6 @@ jobs:
           fi
 
       - name: Report Failure
-        if: if: ${{ failure() }}
+        if: ${{ failure() }}
         run: |
           echo "::error::Monthly API job failed. Check the logs for details."
