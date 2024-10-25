@@ -2,6 +2,8 @@
 from rest_framework import generics
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .serializers import EventSerializer
+from .models import Event
 
 # GoogleLoginView
 import requests
@@ -23,10 +25,7 @@ from dotenv import load_dotenv
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from .serializers import EventSerializer
-from .models import Event
-
-from .tasks import send_event_notification_emails
+from .tasks import send_event_notification_emails, reset_messages_left
 
 
 class Home(APIView):
@@ -132,8 +131,28 @@ class SendEmailsView(APIView):
       return Response({'detail': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
     
     try:
-      send_event_notification_emails()
-      return Response({'message': 'Emails sent successfully'}, status=status.HTTP_200_OK)
+      response = send_event_notification_emails()
+      return Response({'message': response}, status=status.HTTP_200_OK)
+    except Exception as e:
+      return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ResetMessagesLeftView(APIView):
+  def post(self, request, *args, **kwargs):
+    load_dotenv()
+    CRON_SECRET_TOKEN = os.environ.get('CRON_SECRET_TOKEN')
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header is None:
+      return Response({'detail': 'Authorization header missing'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    if auth_header != f'Bearer {CRON_SECRET_TOKEN}':
+      return Response({'detail': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+    
+    try:
+      response = reset_messages_left()
+      return Response({'message': response}, status=status.HTTP_200_OK)
     except Exception as e:
       return Response({'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

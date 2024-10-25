@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from .models import User, Event
 
+from django.utils import timezone
+
 def send_event_notification_emails():
   email_count = 0
 
@@ -45,3 +47,11 @@ def send_event_notification_emails():
     return f'Event notification emails sent successfully: {email_count} email(s) sent.'
   else:
     return 'No emails were sent as there were no notifications to send.'
+
+
+def reset_messages_left():
+  try:
+    User.objects.all().update(messages_left=10)
+    return 'Messages left successfully reset for all users'
+  except Exception as e:
+    return f'Messages were not reset due to error: {e}'

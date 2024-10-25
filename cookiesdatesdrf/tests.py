@@ -4,7 +4,7 @@ from django.utils import timezone
 from datetime import timedelta
 import os
 from .models import User, Event
-from .tasks import send_event_notification_emails
+from .tasks import send_event_notification_emails, reset_messages_left
 
 class SendEventNotificationEmailsTest(TestCase):
   def setUp(self):
@@ -66,3 +66,20 @@ class SendEventNotificationEmailsTest(TestCase):
     mock_send_mail.assert_not_called()
     # Verify the response
     self.assertEqual(response, 'No emails were sent as there were no notifications to send.')
+
+
+class ResetMessageLeftTest(TestCase):
+  def setUp(self):
+    # Create some test users
+    User.objects.create(username='testuser1', messages_left=7)
+    User.objects.create(username='testuser2', messages_left=4)
+  
+  def test_reset_messages_left_success(self):
+    response = reset_messages_left()
+
+    self.assertEqual(response, 'Messages left successfully reset for all users')
+
+    # Check if messages_left is reset to 10 for all users
+    users = User.objects.all()
+    for user in users:
+      self.assertEqual(user.messages_left, 10)    
