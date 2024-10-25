@@ -42,10 +42,13 @@ COPY requirements.txt /tmp/requirements.txt
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
 
-# set the Django default project name
+# Set the Django default project name
 ARG PROJ_NAME="cookiesdates"
 
-# create a bash script to run the Django project
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
+# Create a bash script to run the Django project
 # this script will execute at runtime when
 # the container starts and the database is available
 RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
@@ -53,7 +56,7 @@ RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
     printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
 
-# make the bash script executable
+# Make the bash script executable
 RUN chmod +x paracord_runner.sh
 
 # Clean up apt cache to reduce image size
