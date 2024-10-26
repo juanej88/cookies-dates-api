@@ -114,6 +114,7 @@ class GoogleLoginView(APIView):
         return Response({
           'message': 'Login successful',
           'first_name': user.first_name,
+          'messages_left': user.messages_left,
           'token': token.key,
         }, status=status.HTTP_200_OK)
       else:

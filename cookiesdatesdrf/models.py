@@ -29,7 +29,7 @@ class Event(models.Model):
     default=0
   )
   notification_date = models.DateField(null=True, blank=True)
-  previous_message = models.CharField(max_length=250, null=True, blank=True)
+  previous_message = models.CharField(max_length=500, null=True, blank=True)
   
   user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='events')
 
