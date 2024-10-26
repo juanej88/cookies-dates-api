@@ -44,6 +44,16 @@ class EventListCreateView(generics.ListCreateAPIView):
   def get_queryset(self):
     return Event.objects.filter(user=self.request.user)
   
+  def get(self, request, *args, **kwargs):
+    queryset = self.get_queryset()
+    serializer = self.get_serializer(queryset, many=True)
+
+    # Include messages_left in the response
+    return Response({
+      'events': serializer.data,
+      'messages_left': request.user.messages_left,
+    })
+  
   def perform_create(self, serializer):
     serializer.save(user=self.request.user)
 
@@ -103,11 +113,7 @@ class GoogleLoginView(APIView):
 
         return Response({
           'message': 'Login successful',
-          'user_id': user.id,
-          'email': user.email,
           'first_name': user.first_name,
-          'last_name': user.last_name,
-          'messages_left': user.messages_left,
           'token': token.key,
         }, status=status.HTTP_200_OK)
       else:
