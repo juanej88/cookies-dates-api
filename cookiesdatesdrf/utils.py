@@ -71,7 +71,7 @@ def create_chatgpt_message(person_name, person_details=None, previous_message=No
 
     return response.choices[0].message.content
   except Exception as error:
-    return print(error)
+    print(error)
 
 
 if __name__ == '__main__':
