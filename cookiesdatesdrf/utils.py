@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 import os
 from openai import OpenAI
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
 from django.core.exceptions import PermissionDenied
 
@@ -43,8 +43,8 @@ def get_notification_date(event, notification_days):
 
 
 def create_chatgpt_message(person_name, person_details=None, previous_message=None):
-  # load_dotenv()
-  client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+  load_dotenv()
+  client = OpenAI()
 
   system_message = {
     'role': 'system',
