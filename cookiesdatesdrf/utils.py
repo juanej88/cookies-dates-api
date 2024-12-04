@@ -41,34 +41,37 @@ def get_notification_date(event, notification_days):
 
 
 def create_chatgpt_message(person_name, person_details=None, previous_message=None):
-	load_dotenv()
-	client = OpenAI()
+  load_dotenv()
+  try:
+    client = OpenAI()
 
-	system_message = {
-		'role': 'system',
-		'content': 'You are an assistant that generates thoughtful and heartwarming birthday messages with a strict maximum of 60 tokens. When users provide personal details, incorporate them to make the message more unique and meaningful. If no specific details are provided, generate a generic but heartfelt birthday message. Avoid repeating previous messages. Avoid using their last names if given. If a user asks a question unrelated to birthday messages, politely inform them of your focus and invite them to ask about birthday messages.',
-	}
+    system_message = {
+      'role': 'system',
+      'content': 'You are an assistant that generates thoughtful and heartwarming birthday messages with a strict maximum of 60 tokens. When users provide personal details, incorporate them to make the message more unique and meaningful. If no specific details are provided, generate a generic but heartfelt birthday message. Avoid repeating previous messages. Avoid using their last names if given. If a user asks a question unrelated to birthday messages, politely inform them of your focus and invite them to ask about birthday messages.',
+    }
 
-	user_message_content = f"Birthday person's name is {person_name}."
+    user_message_content = f"Birthday person's name is {person_name}."
 
-	if person_details:
-		user_message_content += f'Here are some personal details: {person_details}.'
+    if person_details:
+      user_message_content += f'Here are some personal details: {person_details}.'
 
-	if previous_message:
-		user_message_content += f'The previous message is: {previous_message}.'
+    if previous_message:
+      user_message_content += f'The previous message is: {previous_message}.'
 
-	user_message = {
-		'role': 'user',
-		'content': user_message_content
-	}
-
-	response = client.chat.completions.create(
-		model='gpt-4o-mini',
-		messages=[system_message, user_message],
-		max_completion_tokens=100,
-	)
+    user_message = {
+      'role': 'user',
+      'content': user_message_content
+    }
   
-	return response.choices[0].message.content
+    response = client.chat.completions.create(
+      model='gpt-4o-mini',
+      messages=[system_message, user_message],
+      max_completion_tokens=100,
+    )
+
+    return response.choices[0].message.content
+  except Exception as error:
+    return print(error)
 
 
 if __name__ == '__main__':
