@@ -8,7 +8,7 @@ Additionally, with **ChatGPT** integration, users can quickly generate personali
 
 I built **Cookies & Dates** to solve a problem I faced with remembering important dates like birthdays and anniversaries. I found Facebook's notifications to be overwhelming and irrelevant, reminding me of people I wasn't close to, while my phone's calendar app felt cluttered and inefficient. I also tried other apps, but many were filled with annoying ads or overly complex, making them hard to use.
 
-In addition, I struggled to send quick, thoughtful messages to my loved ones, often missing the opportunity to reach out. To address this, I integrated **ChatGPT** into the app, allowing me to quickly generate personalised messages, making it easier to stay connected with the people I care about.
+In addition, I struggled to send quick, thoughtful messages to my loved ones, often missing the opportunity to reach out. To address this, I integrated **ChatGPT** into the app, allowing me to quickly generate personalised messages, making it easier to stay connected with the people I care the most.
 
 **Cookies & Dates** offers a simple, user-friendly solution that helps me remember important dates, receive timely reminders, and send meaningful messages without the distractions of ads or complex features.
 
